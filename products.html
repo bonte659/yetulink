@@ -1,0 +1,1188 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Where Design Meet Display | YETULINK</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --secondary: #f59e0b;
+            --dark: #1e293b;
+            --light: #ffffff;
+            --gray: #e2e8f0;
+            --gray-dark: #94a3b8;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: var(--dark);
+        }
+
+        header {
+            background-color: var(--light);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        /* Add media queries for responsiveness - when the screen is 500px wide or less, stack the links on top of each other */
+@media screen and (max-width: 500px) {
+  .header a {
+    float: none;
+    display: block;
+    text-align: left;
+  }
+  .header-right {
+    float: none;
+  }
+}
+        
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        .search-bar {
+    display: flex;
+    align-items: center;
+}
+        
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-menu a {
+            color: var(--dark);
+            text-decoration: none;
+        }
+        .menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        right: 20px;
+        background: white;
+        padding: 10px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-links.show {
+        display: flex;
+    }
+
+    .menu-toggle {
+        display: block;
+    }
+}
+
+        .breadcrumb {
+            padding: 1rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .product-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .product-gallery {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .thumbnail-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .thumbnail {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .thumbnail:hover,
+        .thumbnail.active {
+            border-color: var(--primary);
+        }
+
+        .main-image {
+            width: 100%;
+            height: 500px;
+            object-fit: contain;
+            border-radius: 10px;
+            background-color: white;
+            padding: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            cursor: zoom-in;
+        }
+
+        .zoom-lens {
+            position: absolute;
+            border: 1px solid var(--primary);
+            background-color: rgba(37, 99, 235, 0.2);
+            display: none;
+            pointer-events: none;
+        }
+
+        .product-details {
+            padding: 1rem;
+        }
+
+        .product-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-seller {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            color: var(--gray-dark);
+        }
+
+        .seller-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .rating-stars {
+            color: var(--secondary);
+        }
+
+        .rating-count {
+            color: var(--gray-dark);
+            font-size: 0.9rem;
+        }
+
+        .product-price {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 1.5rem 0;
+        }
+
+        .product-description {
+            margin-bottom: 2rem;
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .product-description h3 {
+            font-size: 1.5em;
+            color: #007BFF;
+            margin-bottom: 10px;
+        }
+
+        .product-description p {
+            font-size: 1em;
+            margin-bottom: 1em;
+        }
+
+        .product-description a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        .product-description a:hover {
+            text-decoration: underline;
+        }
+
+        .product-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .meta-item i {
+            color: var(--primary);
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        #quantity-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 1px solid var(--gray);
+            background: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quantity-input {
+            width: 60px;
+            height: 40px;
+            text-align: center;
+            border: 1px solid var(--gray);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            flex: 1;
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(37, 99, 235, 0.1);
+        }
+
+        .delivery-info {
+            background-color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .delivery-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .delivery-header i {
+            color: var(--success);
+            font-size: 1.5rem;
+        }
+
+        .delivery-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .delivery-option {
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--gray);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .delivery-option:hover {
+            border-color: var(--primary);
+        }
+
+        .delivery-option.active {
+            border-color: var(--primary);
+            background-color: rgba(37, 99, 235, 0.05);
+        }
+
+        .delivery-option-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .delivery-option-details {
+            font-size: 0.9rem;
+            color: var(--gray-dark);
+        }
+
+        .map-container {
+            height: 300px;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .similar-products {
+            grid-column: 1 / -1;
+            margin-top: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .product-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-card-image {
+            height: 200px;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .product-card-details {
+            padding: 1rem;
+        }
+
+        .product-card-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-card-price {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .product-card-location {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            color: var(--gray-dark);
+            font-size: 0.9rem;
+        }
+
+        /* Payment Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-dark);
+        }
+
+        .modal-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .payment-method {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--gray);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-method:hover {
+            border-color: var(--primary);
+        }
+
+        .payment-method.active {
+            border-color: var(--primary);
+            background-color: rgba(37, 99, 235, 0.05);
+        }
+
+        .payment-method-icon {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+
+        .payment-form {
+            display: none;
+            margin-top: 1.5rem;
+        }
+
+        .payment-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--gray);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .chat-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 100;
+        }
+
+        .chat-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .chat-window {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            width: 350px;
+            height: 500px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-window.active {
+            display: flex;
+        }
+
+        .chat-header {
+            padding: 1rem;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 1rem;
+            border-top: 1px solid var(--gray);
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 0.8rem;
+            border: 1px solid var(--gray);
+            border-radius: 20px;
+            outline: none;
+        }
+
+        .chat-input button {
+            margin-left: 0.5rem;
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            max-width: 80%;
+        }
+
+        .message.sent {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .message.received {
+            margin-right: auto;
+        }
+
+        .message-content {
+            padding: 0.8rem 1rem;
+            border-radius: 18px;
+            display: inline-block;
+        }
+
+        .message.sent .message-content {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .message.received .message-content {
+            background-color: var(--gray);
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            color: var(--gray-dark);
+            margin-top: 0.3rem;
+        }
+
+        .ar-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ar-viewer.active {
+            display: flex;
+        }
+
+        .ar-container {
+            width: 90%;
+            height: 70%;
+            background-color: black;
+            position: relative;
+        }
+
+        .ar-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .ar-instructions {
+            color: white;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        @media (max-width: 1024px) {
+            .product-container {
+                grid-template-columns: 1fr;
+            }
+
+            .product-gallery {
+                grid-template-columns: 80px 1fr;
+            }
+
+            .thumbnail {
+                width: 80px;
+                height: 80px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+
+            .product-gallery {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto;
+            }
+
+            .thumbnail-container {
+                flex-direction: row;
+                order: 2;
+                overflow-x: auto;
+                padding-bottom: 1rem;
+            }
+
+            .thumbnail {
+                min-width: 60px;
+                height: 60px;
+            }
+
+            .main-image {
+                height: 300px;
+                order: 1;
+            }
+
+            .product-meta {
+                grid-template-columns: 1fr;
+            }
+
+            .delivery-options {
+                grid-template-columns: 1fr;
+            }
+
+            .tab-header {
+                overflow-x: auto;
+            }
+
+            .tab {
+                white-space: nowrap;
+            }
+
+            .chat-window {
+                width: 100%;
+                height: 70vh;
+                bottom: 0;
+                right: 0;
+                border-radius: 10px 10px 0 0;
+            }
+
+            .chat-container {
+                bottom: 1rem;
+                right: 1rem;
+            }
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: var(--light);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .search-bar button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--gray-dark);
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            /* Equal spacing */
+            gap: 10px;
+            /* Optional: Adjust space between buttons */
+            width: 100%;
+        }
+
+        .action-buttons button,
+        .action-buttons form {
+            flex: 1;
+            /* Make both elements take equal space */
+            display: flex;
+            justify-content: center;
+        }
+
+        .cart-icon {
+            position: relative;
+            display: inline-block;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background: red;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 50%;
+            padding: 3px 7px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        /* Make buttons smaller and more compact */
+        .login-btn,
+        .signup-btn {
+            padding: 5px 10px;
+            font-size: 12px;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .message-icon {
+            position: relative;
+            display: inline-block;
+            font-size: 24px;
+            text-decoration: none;
+        }
+
+        .message-count {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background: red;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 50%;
+            padding: 3px 6px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .user-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-dropdown .user-avatar img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            z-index: 999;
+            min-width: 150px;
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 0.5rem 0;
+            color: var(--dark);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: var(--gray);
+            border-radius: 4px;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar">
+            <a href="#" class="logo">
+                <img src="https://www.yetulink.com/assets/user/images/bg/infinite.jpeg" width="125px">
+            </a>
+
+            <div class="nav-links">
+                                <a href="https://www.yetulink.com/Welcome" class="active">Home</a>
+                <a href="https://www.yetulink.com/Welcome#products_link">Products</a>
+                <a href="https://www.yetulink.com/Welcome#events_link">Events</a>
+                <a href="https://www.yetulink.com/Welcome#services_link">Services</a>
+                <a href="https://www.yetulink.com/posts">Sell</a>
+            </div>
+            <form action="https://www.yetulink.com/search" method="POST">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search for products, events or services...">
+                    <button>🔍</button>
+                </div>
+            </form>
+            <div class="user-menu">
+                <a href="https://www.yetulink.com/cart" class="cart-icon">
+                    🛒
+                    <span class="cart-count">0</span>
+                </a>
+                                    <a href="https://www.yetulink.com/login"
+                        class="btn login-btn"
+                        style="text-decoration: none; border: solid 1px #007bff; color: #007bff; padding: 5px 12px; border-radius: 4px;">
+                        Login
+                    </a>
+                
+            </div>
+        </nav>
+    </header>
+    <script>
+        document.querySelector('.user-avatar').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelector('.dropdown-menu').classList.toggle('show');
+        });
+
+        // Close dropdown if clicked outside
+        document.addEventListener('click', function(e) {
+            const dropdown = document.querySelector('.dropdown-menu');
+            const avatar = document.querySelector('.user-avatar');
+            if (!avatar.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+    </script>
+
+    <div class="breadcrumb">
+        <a href="https://www.yetulink.com/welcome">Home</a> &gt;
+
+        <form action="https://www.yetulink.com/all_filter" method="POST" style="display: inline;">
+            <input type="hidden" name="category[]" value="products">
+            <button type="submit" style="background: none; border: none; padding: 0; color: #007bff; cursor: pointer; font-size: inherit;">
+                Products            </button>
+        </form> &gt;
+
+        <a href="https://www.yetulink.com/search/35">
+            Furniture and accessories        </a> &gt;
+
+        Where Design Meet Display    </div>
+
+
+    <div class="product-container">
+        <div class="product-gallery">
+            <div class="thumbnail-container">
+                <img src="https://www.yetulink.com/uploads/1747266201_wonderisshomes-20250514-0002.jpg" alt="Where Design Meet Display" class="thumbnail active">
+                <img src="https://www.yetulink.com/uploads/1747266201_wonderisshomes-20250514-0001.jpg" alt="Where Design Meet Display" class="thumbnail">
+                <img src="https://www.yetulink.com/uploads/1747266201_wonderisshomes-20250514-0004.jpg" alt="Where Design Meet Display" class="thumbnail">
+                <img src="https://www.yetulink.com/uploads/1747266201_wonderisshomes-20250514-0003.jpg" alt="Where Design Meet Display" class="thumbnail">
+                <button class="btn btn-outline" style="white-space: nowrap;" onclick="openARViewer()">
+                    <i class="fas fa-cube"></i> View in AR
+                </button>
+            </div>
+            <img src="https://www.yetulink.com/uploads/1747266201_wonderisshomes-20250514-0002.jpg" alt="Where Design Meet Display" class="main-image" id="main-image">
+            <div class="zoom-lens" id="zoom-lens"></div>
+        </div>
+        <div class="product-details">
+            <h1 class="product-title"> Where Design Meet Display </h1>
+            <div class="product-seller">
+                <img src="https://www.yetulink.com/uploads/bizlogos/default.jpg" alt="Seller" class="seller-avatar">
+                <span>By <a href="#" style="color: var(--primary);">yetulink products</a></span>
+            </div>
+            <div class="product-rating">
+                <div class="rating-stars">
+                    
+                </div>
+                <div class="rating-count">
+                    42 reviews
+                </div>
+            </div>
+            
+            <div class="rating-stars">
+                <span class="rating-stars" data-value="1">★</span>
+                <span class="rating-stars" data-value="2">★</span>
+                <span class="rating-stars" data-value="3">★</span>
+                <span class="rating-stars" data-value="4">★</span>
+                <span class="rating-stars" data-value="5">★</span>
+            </div>
+            <button class="menu-toggle">☰</button>
+<div class="nav-links">
+    <a href="#">Home</a>
+    <a href="#">Products</a>
+    <a href="#">Events</a>
+    <a href="#">Services</a>
+    <a href="#">Sell</a>
+</div>
+            
+            <script>
+                document.querySelector('.menu-toggle').addEventListener('click', function() {
+    document.querySelector('.nav-links').classList.toggle('show');
+});
+                const ratingstars = document.querySelectorAll('.star');
+                const ratingDisplay = document.getElementById('rating');
+        
+                ratingstars.forEach(ratingstars => {
+                    ratingstars.addEventListener('click', function() {
+                        const rating = this.getAttribute('data-value');
+        
+                        ratingstars.forEach(s => s.classList.remove('selected'));
+                        this.classList.add('selected');
+        
+                        ratingDisplay.textContent = `Rating: ${rating}`;
+                        console.log(`User rated: ${rating} stars`);
+                    });
+                });
+            </script>
+
+            <div class="product-price">Ksh 95,000.00</div>
+            <div class="product-description">
+                <p>
+                    Finding the perfect spot for your TV just got easier — and way more stylish.
+
+
+
+Slide 1/2:
+
+Where rustic charm meets modern                                            <a href="javascript:void(0);" onclick="openFullDescription()">... Read more</a>
+                                    </p>
+            </div>
+            <script>
+                function openFullDescription() {
+                    // Switch to the description tab
+                    switchTab('description');
+
+                    // Scroll to the tab section
+                    const tabSection = document.querySelector('.product-tabs');
+                    if (tabSection) {
+                        tabSection.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+
+                // Switch tab function (make sure this matches your existing logic)
+                function switchTab(tab) {
+                    // Remove active class from all tabs
+                    document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+
+                    // Add active class to the selected tab and content
+                    document.querySelector(`.tab[onclick="switchTab('${tab}')"]`).classList.add('active');
+                    document.getElementById(`${tab}-tab`).classList.add('active');
+                }
+            </script>
+
+            <div class="product-meta">
+                <div class="meta-item">
+                    <i class="fas fa-tag"></i>
+                    <span>Category: Furniture and accessories</span>
+                </div>
+                                    <div class="meta-item">
+                        <i class="fas fa-box"></i>
+                        <span>In stock: 2 items</span>
+                    </div>
+                                <div class="meta-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Location: Industrial Area Nairobi, Likoni Road, Nairobi, Kenya</span>
+                </div>
+                                    <div class="meta-item">
+                        <i class="fas fa-undo"></i>
+                        <span>7-day returns</span>
+                    </div>
+                            </div>
+                            <div class="quantity-selector">
+                    <label for="quantity">Quantity:</label>
+                    <button id="quantity-btn" class="quantity-btn-minus">-</button>
+                    <input type="number" id="quantity" class="quantity-input" value="1" min="1" max="2">
+                    <button id="quantity-btn" class="quantity-btn-plus">+</button>
+                </div>
+
+                <div class="action-buttons">
+                    <!-- <button class="btn btn-primary" onclick="openPaymentModal()">
+                        <i class="fas fa-shopping-cart"></i> Buy Now
+                    </button>
+                    -->
+                    <form action="https://www.yetulink.com/users/Carts/addToCart" method="POST">
+                        <input type="hidden" class="buyfield" name="product_id" value="68252a998c708" />
+                        <input type="hidden" name="qty" id="form-quantity" value="1">
+                        <button class="btn btn-outline"><i class="fas fa-heart"></i> Buy </button>
+                    </form>
+                </div>
+                        <!--
+            <div class="delivery-info">
+                <div class="delivery-header">
+                    <i class="fas fa-truck"></i>
+                    <h3>Delivery Options</h3>
+                </div>
+                <div class="delivery-options">
+                    <div class="delivery-option active">
+                        <div class="delivery-option-title">Standard Delivery</div>
+                        <div class="delivery-option-details">KSh 200 · 2-3 business days</div>
+                    </div>
+                    <div class="delivery-option">
+                        <div class="delivery-option-title">Express Delivery</div>
+                        <div class="delivery-option-details">KSh 400 · 1 business day</div>
+                    </div>
+                </div>
+            </div>
+-->
+            
+
+</body>
+
+</html>
