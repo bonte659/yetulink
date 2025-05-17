@@ -1,0 +1,1769 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Garbage hand | YETULINK</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --secondary: #f59e0b;
+            --dark: #1e293b;
+            --light: #ffffff;
+            --gray: #e2e8f0;
+            --gray-dark: #94a3b8;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: var(--dark);
+        }
+
+        header {
+            background-color: var(--light);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-menu a {
+            color: var(--dark);
+            text-decoration: none;
+        }
+
+        .breadcrumb {
+            padding: 1rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .product-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .product-gallery {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .thumbnail-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .thumbnail {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .thumbnail:hover,
+        .thumbnail.active {
+            border-color: var(--primary);
+        }
+
+        .main-image {
+            width: 100%;
+            height: 500px;
+            object-fit: contain;
+            border-radius: 10px;
+            background-color: white;
+            padding: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            cursor: zoom-in;
+        }
+
+        .zoom-lens {
+            position: absolute;
+            border: 1px solid var(--primary);
+            background-color: rgba(37, 99, 235, 0.2);
+            display: none;
+            pointer-events: none;
+        }
+
+        .product-details {
+            padding: 1rem;
+        }
+
+        .product-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-seller {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            color: var(--gray-dark);
+        }
+
+        .seller-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .rating-stars {
+            color: var(--secondary);
+        }
+
+        .rating-count {
+            color: var(--gray-dark);
+            font-size: 0.9rem;
+        }
+
+        .product-price {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 1.5rem 0;
+        }
+
+        .product-description {
+            margin-bottom: 2rem;
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .product-description h3 {
+            font-size: 1.5em;
+            color: #007BFF;
+            margin-bottom: 10px;
+        }
+
+        .product-description p {
+            font-size: 1em;
+            margin-bottom: 1em;
+        }
+
+        .product-description a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        .product-description a:hover {
+            text-decoration: underline;
+        }
+
+        .product-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .meta-item i {
+            color: var(--primary);
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        #quantity-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 1px solid var(--gray);
+            background: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quantity-input {
+            width: 60px;
+            height: 40px;
+            text-align: center;
+            border: 1px solid var(--gray);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            flex: 1;
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(37, 99, 235, 0.1);
+        }
+
+        .delivery-info {
+            background-color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .delivery-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .delivery-header i {
+            color: var(--success);
+            font-size: 1.5rem;
+        }
+
+        .delivery-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .delivery-option {
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--gray);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .delivery-option:hover {
+            border-color: var(--primary);
+        }
+
+        .delivery-option.active {
+            border-color: var(--primary);
+            background-color: rgba(37, 99, 235, 0.05);
+        }
+
+        .delivery-option-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .delivery-option-details {
+            font-size: 0.9rem;
+            color: var(--gray-dark);
+        }
+
+        .map-container {
+            height: 300px;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .similar-products {
+            grid-column: 1 / -1;
+            margin-top: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .product-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-card-image {
+            height: 200px;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .product-card-details {
+            padding: 1rem;
+        }
+
+        .product-card-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-card-price {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .product-card-location {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            color: var(--gray-dark);
+            font-size: 0.9rem;
+        }
+
+        /* Payment Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-dark);
+        }
+
+        .modal-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .payment-method {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--gray);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-method:hover {
+            border-color: var(--primary);
+        }
+
+        .payment-method.active {
+            border-color: var(--primary);
+            background-color: rgba(37, 99, 235, 0.05);
+        }
+
+        .payment-method-icon {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+
+        .payment-form {
+            display: none;
+            margin-top: 1.5rem;
+        }
+
+        .payment-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--gray);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .chat-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 100;
+        }
+
+        .chat-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .chat-window {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            width: 350px;
+            height: 500px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-window.active {
+            display: flex;
+        }
+
+        .chat-header {
+            padding: 1rem;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 1rem;
+            border-top: 1px solid var(--gray);
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 0.8rem;
+            border: 1px solid var(--gray);
+            border-radius: 20px;
+            outline: none;
+        }
+
+        .chat-input button {
+            margin-left: 0.5rem;
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            max-width: 80%;
+        }
+
+        .message.sent {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .message.received {
+            margin-right: auto;
+        }
+
+        .message-content {
+            padding: 0.8rem 1rem;
+            border-radius: 18px;
+            display: inline-block;
+        }
+
+        .message.sent .message-content {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .message.received .message-content {
+            background-color: var(--gray);
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            color: var(--gray-dark);
+            margin-top: 0.3rem;
+        }
+
+        .ar-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ar-viewer.active {
+            display: flex;
+        }
+
+        .ar-container {
+            width: 90%;
+            height: 70%;
+            background-color: black;
+            position: relative;
+        }
+
+        .ar-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .ar-instructions {
+            color: white;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        @media (max-width: 1024px) {
+            .product-container {
+                grid-template-columns: 1fr;
+            }
+
+            .product-gallery {
+                grid-template-columns: 80px 1fr;
+            }
+
+            .thumbnail {
+                width: 80px;
+                height: 80px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+
+            .product-gallery {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto;
+            }
+
+            .thumbnail-container {
+                flex-direction: row;
+                order: 2;
+                overflow-x: auto;
+                padding-bottom: 1rem;
+            }
+
+            .thumbnail {
+                min-width: 60px;
+                height: 60px;
+            }
+
+            .main-image {
+                height: 300px;
+                order: 1;
+            }
+
+            .product-meta {
+                grid-template-columns: 1fr;
+            }
+
+            .delivery-options {
+                grid-template-columns: 1fr;
+            }
+
+            .tab-header {
+                overflow-x: auto;
+            }
+
+            .tab {
+                white-space: nowrap;
+            }
+
+            .chat-window {
+                width: 100%;
+                height: 70vh;
+                bottom: 0;
+                right: 0;
+                border-radius: 10px 10px 0 0;
+            }
+
+            .chat-container {
+                bottom: 1rem;
+                right: 1rem;
+            }
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: var(--light);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .search-bar button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--gray-dark);
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            /* Equal spacing */
+            gap: 10px;
+            /* Optional: Adjust space between buttons */
+            width: 100%;
+        }
+
+        .action-buttons button,
+        .action-buttons form {
+            flex: 1;
+            /* Make both elements take equal space */
+            display: flex;
+            justify-content: center;
+        }
+
+        .cart-icon {
+            position: relative;
+            display: inline-block;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background: red;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 50%;
+            padding: 3px 7px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        /* Make buttons smaller and more compact */
+        .login-btn,
+        .signup-btn {
+            padding: 5px 10px;
+            font-size: 12px;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .message-icon {
+            position: relative;
+            display: inline-block;
+            font-size: 24px;
+            text-decoration: none;
+        }
+
+        .message-count {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background: red;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 50%;
+            padding: 3px 6px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .user-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-dropdown .user-avatar img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            z-index: 999;
+            min-width: 150px;
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 0.5rem 0;
+            color: var(--dark);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: var(--gray);
+            border-radius: 4px;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar">
+            <a href="#" class="logo">
+                <img src="https://www.yetulink.com/assets/user/images/bg/infinite.jpeg" width="125px">
+            </a>
+
+            <div class="nav-links">
+                                <a href="https://www.yetulink.com/Welcome" class="active">Home</a>
+                <a href="https://www.yetulink.com/Welcome#products_link">Products</a>
+                <a href="https://www.yetulink.com/Welcome#events_link">Events</a>
+                <a href="https://www.yetulink.com/Welcome#services_link">Services</a>
+                <a href="https://www.yetulink.com/posts">Sell</a>
+            </div>
+            <form action="https://www.yetulink.com/search" method="POST">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search for products, events or services...">
+                    <button>🔍</button>
+                </div>
+            </form>
+            <div class="user-menu">
+                <a href="https://www.yetulink.com/cart" class="cart-icon">
+                    🛒
+                    <span class="cart-count">0</span>
+                </a>
+                                    <a href="https://www.yetulink.com/login"
+                        class="btn login-btn"
+                        style="text-decoration: none; border: solid 1px #007bff; color: #007bff; padding: 5px 12px; border-radius: 4px;">
+                        Login
+                    </a>
+                
+            </div>
+        </nav>
+    </header>
+    <script>
+        document.querySelector('.user-avatar').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelector('.dropdown-menu').classList.toggle('show');
+        });
+
+        // Close dropdown if clicked outside
+        document.addEventListener('click', function(e) {
+            const dropdown = document.querySelector('.dropdown-menu');
+            const avatar = document.querySelector('.user-avatar');
+            if (!avatar.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+    </script>
+
+    <div class="breadcrumb">
+        <a href="https://www.yetulink.com/welcome">Home</a> &gt;
+
+        <form action="https://www.yetulink.com/all_filter" method="POST" style="display: inline;">
+            <input type="hidden" name="category[]" value="services">
+            <button type="submit" style="background: none; border: none; padding: 0; color: #007bff; cursor: pointer; font-size: inherit;">
+                Services            </button>
+        </form> &gt;
+
+        <a href="https://www.yetulink.com/search/58">
+            Waste & Garbage collection         </a> &gt;
+
+        Professional Garbage hand    </div>
+
+
+    <div class="product-container">
+        <div class="product-gallery">
+            <div class="thumbnail-container">
+                <img src="https://www.yetulink.com/uploads/1746495345_1000002284.png" alt="Professional Garbage hand" class="thumbnail active">
+                <img src="https://www.yetulink.com/uploads/1746495345_1000002283.png" alt="Professional Garbage hand" class="thumbnail">
+                <img src="https://www.yetulink.com/uploads/1746495345_1000002282.png" alt="Professional Garbage hand" class="thumbnail">
+                <img src="https://www.yetulink.com/uploads/1746495345_1000002281.png" alt="Professional Garbage hand" class="thumbnail">
+                <button class="btn btn-outline" style="white-space: nowrap;" onclick="openARViewer()">
+                    <i class="fas fa-cube"></i> View in AR
+                </button>
+            </div>
+            <img src="https://www.yetulink.com/uploads/1746495345_1000002284.png" alt="Professional Garbage hand" class="main-image" id="main-image">
+            <div class="zoom-lens" id="zoom-lens"></div>
+        </div>
+        <div class="product-details">
+            <h1 class="product-title"> Professional Garbage hand </h1>
+            <div class="product-seller">
+                <img src="https://www.yetulink.com/uploads/bizlogos/default.jpg" alt="Seller" class="seller-avatar">
+                <span>By <a href="#" style="color: var(--primary);">sweat working </a></span>
+            </div>
+            <div class="product-rating">
+                <div class="rating-stars">
+                    ⭐⭐⭐⭐⭐
+                </div>
+                <div class="rating-count">
+                    42 reviews
+                </div>
+            </div>
+
+            <div class="product-price">Ksh 3,500.00</div>
+            <div class="product-description">
+                <p>
+                    Professional Garbage Collection & Waste Management Services 
+
+Service Overview  
+We provide reliable, eco-friendly waste collection and disposal solutions for                                            <a href="javascript:void(0);" onclick="openFullDescription()">... Read more</a>
+                                    </p>
+            </div>
+            <script>
+                function openFullDescription() {
+                    // Switch to the description tab
+                    switchTab('description');
+
+                    // Scroll to the tab section
+                    const tabSection = document.querySelector('.product-tabs');
+                    if (tabSection) {
+                        tabSection.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+
+                // Switch tab function (make sure this matches your existing logic)
+                function switchTab(tab) {
+                    // Remove active class from all tabs
+                    document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+
+                    // Add active class to the selected tab and content
+                    document.querySelector(`.tab[onclick="switchTab('${tab}')"]`).classList.add('active');
+                    document.getElementById(`${tab}-tab`).classList.add('active');
+                }
+            </script>
+
+            <div class="product-meta">
+                <div class="meta-item">
+                    <i class="fas fa-tag"></i>
+                    <span>Category: Waste & Garbage collection </span>
+                </div>
+                                <div class="meta-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Location: Precious plaza, Naivasha Road, Nairobi, Kenya</span>
+                </div>
+                            </div>
+                            <div class="action-buttons">
+                    <form action="https://www.yetulink.com/users/Carts/addToCart" method="POST">
+                        <input type="hidden" class="buyfield" name="product_id" value="6819677183a87" />
+                        <input type="hidden" name="qty" id="form-quantity" value="1">
+                        <button class="btn btn-outline"><i class="fas fa-heart"></i> Book Service </button>
+                    </form>
+                </div>
+                        <!--
+            <div class="delivery-info">
+                <div class="delivery-header">
+                    <i class="fas fa-truck"></i>
+                    <h3>Delivery Options</h3>
+                </div>
+                <div class="delivery-options">
+                    <div class="delivery-option active">
+                        <div class="delivery-option-title">Standard Delivery</div>
+                        <div class="delivery-option-details">KSh 200 · 2-3 business days</div>
+                    </div>
+                    <div class="delivery-option">
+                        <div class="delivery-option-title">Express Delivery</div>
+                        <div class="delivery-option-details">KSh 400 · 1 business day</div>
+                    </div>
+                </div>
+            </div>
+-->
+            <div class="map-container" id="map"></div>
+        </div>
+        <style>
+            .product-tabs {
+                margin-top: 3rem;
+                grid-column: 1 / -1;
+                width: 100%;
+            }
+
+            .tab-header {
+                display: flex;
+                flex-wrap: wrap;
+                border-bottom: 1px solid var(--gray);
+                gap: 0.5rem;
+            }
+
+            .tab {
+                padding: 1rem 2rem;
+                cursor: pointer;
+                font-weight: 500;
+                position: relative;
+                white-space: nowrap;
+                transition: background 0.2s ease;
+            }
+
+            .tab.active {
+                font-weight: 600;
+                color: var(--primary);
+            }
+
+            .tab.active::after {
+                content: '';
+                position: absolute;
+                bottom: -1px;
+                left: 0;
+                right: 0;
+                height: 2px;
+                background-color: var(--primary);
+            }
+
+            .tab-content {
+                padding: 2rem 0;
+                display: none;
+            }
+
+            .tab-content.active {
+                display: block;
+            }
+
+            .review {
+                margin-bottom: 2rem;
+                padding-bottom: 2rem;
+                border-bottom: 1px solid var(--gray);
+            }
+
+            .review-header {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                flex-wrap: wrap;
+                margin-bottom: 1rem;
+            }
+
+            .review-avatar {
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                object-fit: cover;
+            }
+
+            .review-author {
+                font-weight: 600;
+            }
+
+            .review-date {
+                color: var(--gray-dark);
+                font-size: 0.9rem;
+            }
+
+            .review-rating {
+                color: var(--secondary);
+                margin-bottom: 0.5rem;
+            }
+
+            @media (max-width: 768px) {
+                .tab-header {
+                    flex-direction: column;
+                    gap: 0;
+                }
+
+                .tab {
+                    width: 100%;
+                    padding: 1rem;
+                    text-align: left;
+                    border-left: 4px solid transparent;
+                }
+
+                .tab.active {
+                    border-left: 4px solid var(--primary);
+                    background-color: #f9f9f9;
+                }
+
+                .review-header {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+
+                .review-avatar {
+                    width: 40px;
+                    height: 40px;
+                }
+
+                .seller-info {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+
+                .seller-info img {
+                    width: 80px;
+                    height: 80px;
+                }
+
+                .product-tabs {
+                    padding: 0 1rem;
+                }
+            }
+        </style>
+        <div class="product-tabs">
+            <div class="tab-header">
+                <div class="tab active" onclick="switchTab('description')">Description</div>
+                <div class="tab" onclick="switchTab('seller')">Seller Info</div>
+                <div class="tab" onclick="switchTab('delivery')">Delivery & Return Policy</div>
+                <div class="tab" onclick="switchTab('review')">Review</div>
+            </div>
+
+            <div class="tab-content active" id="description-tab">
+                <h3>Product Story</h3>
+                <p>Professional Garbage Collection &amp; Waste Management Services <br /></p><p><br /></p><p>Service Overview  <br /></p><p>We provide reliable, eco-friendly waste collection and disposal solutions for residential and commercial properties. Our scheduled pickup services ensure your home or business remains clean and compliant with local waste regulations.  <br /></p><p><br /></p><p>Core Services<br /></p><p><br /></p><p>Residential Waste Collection  <br /></p><p>- Weekly curbside trash pickup  <br /></p><p>- Recycling collection (paper, plastic, glass, metal)  <br /></p><p>- Yard waste/compost collection  <br /></p><p>- Bulk item pickup (furniture, appliances)  <br /></p><p><br /></p><p>Commercial Waste Solutions  <br /></p><p>- Dumpster rental services  <br /></p><p>- Construction debris removal  <br /></p><p>- Office recycling programs  <br /></p><p>- Scheduled compactor servicing  <br /></p><p><br /></p><p>Specialty Services  <br /></p><p>- Hazardous waste disposal (by appointment)  <br /></p><p>- Electronic waste recycling  <br /></p><p>- Seasonal waste collection (holiday trees, leaves)  <br /></p><p>- Junk removal services  <br /></p><p><br /></p><p>Service Features &amp; Benefits <br /></p><p>- Consistent, on-time collections  <br /></p><p>- Environmentally responsible disposal methods  <br /></p><p>- Clean, odor-controlled trucks  <br /></p><p>- Flexible scheduling options  <br /></p><p>- Online account management  <br /></p><p><br /></p><p>Service Areas Covered  <br /></p><p>Available throughout Nairobi City/County , serving:  <br /></p><p>- Single-family homes  <br /></p><p>- Apartment complexes  <br /></p><p>- Retail businesses  <br /></p><p>- Construction sites  <br /></p><p>- Industrial facilities  <br /></p><p><br /></p><p>How Our Service Works  <br /></p><p>1. Sign Up - Choose your service plan  <br /></p><p>2. Receive Bins - We provide appropriate containers  <br /></p><p>3. Set Out Waste - Place at designated location  <br /></p><p>4. Regular Pickup - On scheduled collection days  <br /></p><p>5. Billing - Convenient monthly/quarterly options  <br /></p><p><br /></p><p>Pricing &amp; Plans  <br /></p><p>- Basic trash collection: [ksh.3500]/month  <br /></p><p>- Recycling add-on: [ksh.4200]/month  <br /></p><p>- Yard waste seasonal service: [Ksh. 2500]  <br /></p><p>- One-time bulk pickup: [Ksh.1000/]/item  <br /></p><p>- Custom commercial quotes available  <br /></p><p><br /></p><p>Why Choose Our Service?  <br /></p><p>✓ Licensed and insured waste handlers  <br /></p><p>✓ Modern, well-maintained fleet  <br /></p><p>✓ Environmentally compliant disposal  <br /></p><p>✓ Responsive customer service  <br /></p><p>✓ Community-focused business  <br /></p><p><br /></p><p>Proper Waste Preparation Guidelines <br /></p><p>- Bag and tie all trash securely  <br /></p><p>- Rinse recyclables before disposal  <br /></p><p>- Separate materials as required  <br /></p><p>- Place bins curbside by 6AM on pickup day  <br /></p><p>- Do not include prohibited items  <br /></p><p><br /></p><p>Prohibited Items <br /></p><p>- Hazardous chemicals  <br /></p><p>- Medical/biohazard waste  <br /></p><p>- Tires  <br /></p><p>- Untreated construction debris  <br /></p><p>- Hot ashes  <br /></p><p><br /></p><p>Contact Us  <br /></p><p>Phone:   +254 758 157 702 / +254 719 581 705<br /></p><p>Office Hours: [Your Business Hours]  <br /></p><p><br /></p><p>Additional Offerings <br /></p><p>- Waste audits for businesses  <br /></p><p>- Zero-waste consulting  <br /></p><p>- Community cleanup events  <br /></p><p>- Landfill diversion programs  <br /></p><p><br /></p><p>Emergency spill cleanup services available  <br /></p><p><br /></p><p>Fully Licensed • Environmentally Responsible • Serving Nairobi Since 2010<br /></p><p><br /></p><p></p>
+            </div>
+
+            <div class="tab-content active" id="delivery-tab">
+                <h4> How our delivery works</h4>
+                <p>
+                    The seller is responsible for delivery responsibilities and costs related. Current live location of the buyer is the delivery point guided by the system.
+
+                    Automatic cancellation of the post happens after delivery timeframe has elapse.
+                </p>
+                <h4> Our Return Policy</h4>
+                <p>
+                    The buyer has the right to accept or reject the purchased post as per the description and pics uploaded.
+
+                    Sellers have the responsibility to deliver the item as per the description and pics posted.
+                </p>
+            </div>
+            <div class="tab-content active" id="review-tab">
+
+
+            </div>
+
+            <div class="tab-content" id="seller-tab">
+                <div style="display: flex; gap: 2rem; margin-bottom: 2rem;">
+                    <img src="https://www.yetulink.com/uploads/bizlogos/default.jpg" alt="Seller" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+                    <div>
+                        <h3>sweat working </h3>
+                        <p style="margin-bottom: 1rem;"> Precious plaza, Naivasha Road, Nairobi, Kenya</p>
+                        <div class="product-rating">
+                            <div class="rating-stars">
+                                ⭐⭐⭐⭐⭐ (128)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p> We do this and that</p>
+
+                <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                    <button class="btn btn-outline">
+                        <i class="fas fa-store"></i> Visit Shop
+                    </button>
+                    <button class="btn btn-outline">
+                        <i class="fas fa-comment"></i> Contact Seller
+                    </button>
+                </div>
+            </div>
+        </div>
+        <script>
+            function switchTab(tabName) {
+                const tabs = document.querySelectorAll('.tab');
+                const contents = document.querySelectorAll('.tab-content');
+
+                tabs.forEach(tab => tab.classList.remove('active'));
+                contents.forEach(content => content.classList.remove('active'));
+
+                document.querySelector(`.tab[onclick="switchTab('${tabName}')"]`).classList.add('active');
+                document.getElementById(`${tabName}-tab`).classList.add('active');
+            }
+        </script>
+
+            </div>
+
+    <!-- Payment Modal -->
+    <div class="modal" id="payment-modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('payment-modal')">&times;</span>
+            <div class="modal-header">
+                <h2>Complete Your Purchase</h2>
+                <p>Professional Garbage Hand Ksh3,500.00</p>
+            </div>
+
+            <div class="payment-methods">
+                <div class="payment-method active" onclick="selectPaymentMethod('mpesa')">
+                    <img src="https://www.yetulink.com/uploads/bizlogos/mpesa.png" alt="M-Pesa" class="payment-method-icon">
+                    <div>
+                        <div class="delivery-option-title">M-Pesa</div>
+                        <div class="delivery-option-details">Pay via M-Pesa mobile money</div>
+                    </div>
+                </div>
+
+                <div class="payment-method" onclick="selectPaymentMethod('card')">
+                    <img src="https://www.yetulink.com/uploads/bizlogos/card.png" alt="Mastercard" class="payment-method-icon">
+                    <div>
+                        <div class="delivery-option-title">Credit/Debit Card</div>
+                        <div class="delivery-option-details">Visa, Mastercard, etc.</div>
+                    </div>
+                </div>
+
+                <div class="payment-method" onclick="selectPaymentMethod('paypal')">
+                    <img src="https://www.yetulink.com/uploads/bizlogos/paypal.png" alt="PayPal" class="payment-method-icon">
+                    <div>
+                        <div class="delivery-option-title">PayPal</div>
+                        <div class="delivery-option-details">Pay via PayPal account</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- M-Pesa Payment Form -->
+            <div class="payment-form" id="mpesa-form">
+                <div class="form-group">
+                    <label>M-Pesa Phone Number</label>
+                    <input type="tel" class="form-control" placeholder="e.g. 254712345678">
+                </div>
+                <button class="btn btn-primary" style="width: 100%;" onclick="processMpesaPayment()">
+                    <i class="fas fa-mobile-alt"></i> Pay with M-Pesa
+                </button>
+                <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--gray-dark);">
+                    You will receive an M-Pesa push notification to complete payment
+                </p>
+            </div>
+
+            <!-- Card Payment Form -->
+            <div class="payment-form" id="card-form">
+                <div class="form-group">
+                    <label>Card Number</label>
+                    <input type="text" class="form-control" placeholder="1234 5678 9012 3456">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Expiry Date</label>
+                        <input type="text" class="form-control" placeholder="MM/YY">
+                    </div>
+                    <div class="form-group">
+                        <label>CVV</label>
+                        <input type="text" class="form-control" placeholder="123">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Cardholder Name</label>
+                    <input type="text" class="form-control" placeholder="Full name as on card">
+                </div>
+                <button class="btn btn-primary" style="width: 100%;" onclick="processCardPayment()">
+                    <i class="far fa-credit-card"></i> Pay KSh                 </button>
+                <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 1rem;">
+                    <img src="https://via.placeholder.com/50x30/000000/ffffff?text=VISA" alt="Visa" style="height: 30px;">
+                    <img src="https://via.placeholder.com/50x30/EB001B/ffffff?text=MC" alt="Mastercard" style="height: 30px;">
+                </div>
+            </div>
+
+            <!-- PayPal Payment Form -->
+            <div class="payment-form" id="paypal-form">
+                <div id="paypal-button-container" style="margin-top: 1rem;"></div>
+                <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--gray-dark);">
+                    You will be redirected to PayPal to complete your payment
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- AR Viewer -->
+    <div class="ar-viewer" id="ar-viewer">
+        <div class="ar-close" onclick="closeARViewer()">&times;</div>
+        <div class="ar-container" id="ar-container">
+            <!-- AR content will be loaded here -->
+        </div>
+        <div class="ar-instructions">
+            <p>Point your camera at a flat surface to place the product</p>
+            <button class="btn btn-primary" style="margin-top: 1rem;">
+                <i class="fas fa-camera"></i> Take Photo with Product
+            </button>
+        </div>
+    </div>
+
+    <!-- Live Chat -->
+    <div class="chat-container">
+        <div class="chat-button" onclick="toggleChat()">
+            <i class="fas fa-comment-dots"></i>
+        </div>
+        <div class="chat-window" id="chat-window">
+            <div class="chat-header">
+                <div>Chat with Kibera Crafts</div>
+                <div><i class="fas fa-times" onclick="toggleChat()"></i></div>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="message received">
+                    <div class="message-content">
+                        Hello! How can I help you with this necklace?
+                    </div>
+                    <div class="message-time">Today, 2:45 PM</div>
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" placeholder="Type your message..." id="chat-input">
+                <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&currency=USD"></script>
+    <script>
+        // Image zoom functionality
+        const mainImage = document.getElementById('main-image');
+        const zoomLens = document.getElementById('zoom-lens');
+
+        mainImage.addEventListener('mousemove', function(e) {
+            if (!this.dataset.zoomed) {
+                const rect = this.getBoundingClientRect();
+                const x = e.pageX - rect.left;
+                const y = e.pageY - rect.top;
+
+                zoomLens.style.display = 'block';
+                zoomLens.style.width = '100px';
+                zoomLens.style.height = '100px';
+                zoomLens.style.left = `${x - 50}px`;
+                zoomLens.style.top = `${y - 50}px`;
+
+                // Calculate the background position for zoom effect
+                const bgPosX = (x / rect.width) * 100;
+                const bgPosY = (y / rect.height) * 100;
+                this.style.backgroundImage = `url('${this.src}')`;
+                this.style.backgroundSize = '200%';
+                this.style.backgroundPosition = `${bgPosX}% ${bgPosY}%`;
+                this.style.cursor = 'zoom-out';
+                this.dataset.zoomed = true;
+            } else {
+                zoomLens.style.display = 'none';
+                this.style.backgroundImage = 'none';
+                this.style.cursor = 'zoom-in';
+                delete this.dataset.zoomed;
+            }
+        });
+
+        // Thumbnail click functionality
+        const thumbnails = document.querySelectorAll('.thumbnail');
+
+        thumbnails.forEach(thumbnail => {
+            thumbnail.addEventListener('click', function() {
+                // Remove active class from all thumbnails
+                thumbnails.forEach(t => t.classList.remove('active'));
+
+                // Add active class to clicked thumbnail
+                this.classList.add('active');
+
+                // Update main image
+                mainImage.src = this.src.replace('300x300', '600x600');
+                mainImage.style.backgroundImage = 'none';
+                zoomLens.style.display = 'none';
+                delete mainImage.dataset.zoomed;
+            });
+        });
+
+        // Quantity selector functionality
+        const quantityInput = document.querySelector('.quantity-input');
+        const minusBtn = document.querySelector('.quantity-btn-minus');
+        const plusBtn = document.querySelector('.quantity-btn-plus');
+        const formQuantity = document.getElementById("form-quantity");
+        const maxQuantity = parseInt(quantityInput.max);
+
+        function updateButtons() {
+            const current = parseInt(quantityInput.value);
+            plusBtn.disabled = current >= maxQuantity;
+            minusBtn.disabled = current <= 1;
+        }
+        minusBtn.addEventListener('click', function() {
+            let value = parseInt(quantityInput.value);
+            if (value > 1) {
+                quantityInput.value = value - 1;
+                formQuantity.value = quantityInput.value;
+                updateButtons();
+            }
+        });
+
+        plusBtn.addEventListener('click', function() {
+            let value = parseInt(quantityInput.value);
+            quantityInput.value = value + 1;
+            formQuantity.value = quantityInput.value;
+            updateButtons();
+        });
+
+        quantityInput.addEventListener("input", function() {
+            let value = parseInt(quantityInput.value);
+            // Clamp manually typed values
+            if (value > maxQuantity) {
+                quantityInput.value = maxQuantity;
+            } else if (value < 1) {
+                quantityInput.value = 1;
+            }
+            formQuantity.value = quantityInput.value;
+            updateButtons();
+        });
+
+        // Initial button state on page load
+        updateButtons();
+
+        // Delivery option selection
+        const deliveryOptions = document.querySelectorAll('.delivery-option');
+
+        deliveryOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                deliveryOptions.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Tab switching functionality
+        function switchTab(tabName) {
+            // Update tab headers
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update tab content
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+
+        // Payment modal functions
+        function openPaymentModal() {
+            document.getElementById('payment-modal').style.display = 'flex';
+            selectPaymentMethod('mpesa'); // Default to M-Pesa
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function selectPaymentMethod(method) {
+            // Update active payment method
+            const paymentMethods = document.querySelectorAll('.payment-method');
+            paymentMethods.forEach(m => m.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            // Show corresponding form
+            document.querySelectorAll('.payment-form').forEach(form => {
+                form.classList.remove('active');
+            });
+            document.getElementById(`${method}-form`).classList.add('active');
+
+            // Initialize PayPal button if selected
+            if (method === 'paypal') {
+                initPayPalButton();
+            }
+        }
+
+        function processMpesaPayment() {
+            const phone = document.querySelector('#mpesa-form input[type="tel"]').value;
+            const postid = "6819677183a87";
+            const postname = "Professional Garbage hand";
+            const amount = "3500";
+            const quantity = document.querySelector('#quantity').value;
+
+            if (!phone) {
+                alert('Please enter your M-Pesa phone number');
+                return;
+            }
+
+            document.querySelector('#mpesa-form button').disabled = true;
+
+            // Send payment request to your backend using jQuery Ajax
+            $.ajax({
+                url: "https://www.yetulink.com/mpesa/checkout/noauth",
+                method: 'POST',
+                data: {
+                    phone: phone,
+                    postid: postid,
+                    amount: amount,
+                    quantity: quantity,
+                    postname: postname
+                },
+                dataType: 'json',
+                success: function(data) {
+                    if (data.success) {
+                        alert(`Payment request sent to ${phone}. Complete the transaction on your phone.`);
+                        closeModal('payment-modal');
+                    } else {
+                        alert("Failed to initiate payment. " + (response.message || "Try again."));
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Payment error:", error);
+                    alert("An error occurred while processing your payment.");
+                },
+                complete: function() {
+                    document.querySelector('#mpesa-form button').disabled = false;
+                }
+            });
+        }
+
+
+        function processCardPayment() {
+            // Validate card details
+            const cardNumber = document.querySelector('#card-form input:nth-child(1)').value;
+            const expiry = document.querySelector('#card-form input:nth-child(2)').value;
+            const cvv = document.querySelector('#card-form input:nth-child(3)').value;
+            const name = document.querySelector('#card-form input:nth-child(4)').value;
+
+            if (!cardNumber || !expiry || !cvv || !name) {
+                alert('Please fill in all card details');
+                return;
+            }
+
+            // Simulate card payment processing
+            alert('Processing card payment...');
+            closeModal('payment-modal');
+
+            // In a real app, you would use Stripe or other payment processor
+            // fetch('/api/payments/card', {
+            //     method: 'POST',
+            //     body: JSON.stringify({ cardNumber, expiry, cvv, name, amount: 1800 })
+            // })
+        }
+
+        function initPayPalButton() {
+            // Render the PayPal button into #paypal-button-container
+            paypal.Buttons({
+                createOrder: function(data, actions) {
+                    return actions.order.create({
+                        purchase_units: [{
+                            amount: {
+                                value: '18.00' // $18.00 (converted from KSh)
+                            }
+                        }]
+                    });
+                },
+                onApprove: function(data, actions) {
+                    return actions.order.capture().then(function(details) {
+                        alert('Transaction completed by ' + details.payer.name.given_name);
+                        closeModal('payment-modal');
+                    });
+                }
+            }).render('#paypal-button-container');
+        }
+
+        // AR Viewer functions
+        function openARViewer() {
+            document.getElementById('ar-viewer').classList.add('active');
+
+            // In a real app, you would initialize AR.js or similar here
+            // For demo purposes, we'll just show a placeholder
+            document.getElementById('ar-container').innerHTML = `
+                <img src="https://source.unsplash.com/random/800x600/?maasai+necklace+3d" 
+                     style="width: 100%; height: 100%; object-fit: contain;" 
+                     alt="AR View of Necklace">
+            `;
+        }
+
+        function closeARViewer() {
+            document.getElementById('ar-viewer').classList.remove('active');
+        }
+
+        // Live Chat functions
+        function toggleChat() {
+            document.getElementById('chat-window').classList.toggle('active');
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+
+            if (message) {
+                const messagesContainer = document.getElementById('chat-messages');
+
+                // Add user message
+                const userMessage = document.createElement('div');
+                userMessage.className = 'message sent';
+                userMessage.innerHTML = `
+                    <div class="message-content">${message}</div>
+                    <div class="message-time">Just now</div>
+                `;
+                messagesContainer.appendChild(userMessage);
+
+                // Clear input
+                input.value = '';
+
+                // Simulate reply after 1-2 seconds
+                setTimeout(() => {
+                    const replies = [
+                        "Thanks for your message! We'll check on that for you.",
+                        "The necklace is handmade and takes about 3 days to make.",
+                        "Yes, we offer free returns within 7 days.",
+                        "We can customize the colors if you'd like!"
+                    ];
+                    const reply = replies[Math.floor(Math.random() * replies.length)];
+
+                    const botMessage = document.createElement('div');
+                    botMessage.className = 'message received';
+                    botMessage.innerHTML = `
+                        <div class="message-content">${reply}</div>
+                        <div class="message-time">Just now</div>
+                    `;
+                    messagesContainer.appendChild(botMessage);
+
+                    // Scroll to bottom
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }, 1000 + Math.random() * 1000);
+
+                // Scroll to bottom
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        }
+
+        // Allow sending message with Enter key
+        document.getElementById('chat-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+            if (event.target.classList.contains('ar-viewer')) {
+                closeARViewer();
+            }
+        });
+    </script>
+    <script>
+        let map;
+        let bizMarker;
+
+        function initMap() {
+            const geocoder = new google.maps.Geocoder();
+
+            const locationName = "Precious plaza, Naivasha Road, Nairobi, Kenya";
+
+            geocoder.geocode({
+                address: locationName
+            }, (results, status) => {
+                if (status === "OK" && results[0]) {
+                    const bizLocation = results[0].geometry.location;
+
+                    map = new google.maps.Map(document.getElementById("map"), {
+                        center: bizLocation,
+                        zoom: 15,
+                    });
+
+                    bizMarker = new google.maps.Marker({
+                        map: map,
+                        position: bizLocation,
+                        icon: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
+                        title: results[0].formatted_address
+                    });
+
+                } else {
+                    console.error("Geocode failed:", status);
+                    alert("Could not locate the business address.");
+                }
+            });
+        }
+    </script>
+
+    <script async
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyArnYkGpret6MIKLtSLdKwmLJyEk_2T4Rs&callback=initMap">
+    </script>
+
+</body>
+
+</html>
